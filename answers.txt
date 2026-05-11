@@ -1,1 +1,177 @@
 Munguromo Irene 
+
+TASK 1
+
+Full-setup.js code
+
+const Database = require('better-sqlite3');
+const db = new Database('nyondo_stock.db');
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS products (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT NOT NULL,
+description TEXT,
+price REAL NOT NULL
+)
+`);
+
+const insert = db.prepare('INSERT INTO products (name, description, price) VALUES (?, ?, ?)');
+
+const insertAll = db.transaction((rows) => {
+  for (const r of rows) insert.run(...r);
+});
+
+insertAll([
+  ['Cement (bag)', 'Portland cement 50kg bag', 35000],
+  ['Iron Sheet 3m','Gauge 30 roofing sheet 3m long', 110000],
+  ['Paint 5L', 'Exterior wall paint white 5L', 60000],
+  ['Nails 1kg', 'Common wire nails 1kg pack', 12000],
+  ['Timber 2x4', 'Pine timber plank 2x4 per metre', 25000],
+]);
+
+const rows = db.prepare('SELECT * FROM products').all();
+console.log(rows);
+
+CREATE TABLE statement
+
+CREATE TABLE IF NOT EXISTS products (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT NOT NULL,
+description TEXT,
+price REAL NOT NULL
+)
+
+INSERT statement
+
+INSERT INTO products (name, description, price) VALUES (?, ?, ?)
+
+SELECT * output
+
+[
+  {
+    id: 1,
+    name: 'Cement (bag)',
+    description: 'Portland cement 50kg bag',
+    price: 35000
+  },
+  {
+    id: 2,
+    name: 'Iron Sheet 3m',
+    description: 'Gauge 30 roofing sheet 3m long',
+    price: 110000
+  },
+  {
+    id: 3,
+    name: 'Paint 5L',
+    description: 'Exterior wall paint white 5L',
+    price: 60000
+  },
+  {
+    id: 4,
+    name: 'Nails 1kg',
+    description: 'Common wire nails 1kg pack',
+    price: 12000
+  },
+  {
+    id: 5,
+    name: 'Timber 2x4',
+    description: 'Pine timber plank 2x4 per metre',
+    price: 25000
+  }
+]
+
+
+
+TASK 2 - QUERIES
+Query A
+SELECT * FROM products
+
+Output:
+[
+  { id: 1, name: 'Cement (bag)', description: 'Portland cement 50kg bag', price: 35000 },
+  { id: 2, name: 'Iron Sheet 3m', description: 'Gauge 30 roofing sheet 3m long', price: 110000 },
+  { id: 3, name: 'Paint 5L', description: 'Exterior wall paint white 5L', price: 60000 },
+  { id: 4, name: 'Nails 1kg', description: 'Common wire nails 1kg pack', price: 12000 },
+  { id: 5, name: 'Timber 2x4', description: 'Pine timber plank 2x4 per metre', price: 25000 }
+]
+
+Query B
+SELECT name, price FROM products
+
+Output:
+[
+  { name: 'Cement (bag)', price: 35000 },
+  { name: 'Iron Sheet 3m', price: 110000 },
+  { name: 'Paint 5L', price: 60000 },
+  { name: 'Nails 1kg', price: 12000 },
+  { name: 'Timber 2x4', price: 25000 }
+]
+
+Query C
+SELECT * FROM products WHERE id = 3
+
+Output:
+{
+  id: 3,
+  name: 'Paint 5L',
+  description: 'Exterior wall paint white 5L',
+  price: 60000
+}
+
+Query D
+SELECT * FROM products WHERE name LIKE '%sheet%'
+
+Output:
+[
+  {
+    id: 2,
+    name: 'Iron Sheet 3m',
+    description: 'Gauge 30 roofing sheet 3m long',
+    price: 110000
+  }
+]
+
+Query E
+SELECT * FROM products ORDER BY price DESC
+
+Output:
+[
+  { id: 2, name: 'Iron Sheet 3m', price: 110000, description: 'Gauge 30 roofing sheet 3m long' },
+  { id: 3, name: 'Paint 5L', price: 60000, description: 'Exterior wall paint white 5L' },
+  { id: 1, name: 'Cement (bag)', price: 38000, description: 'Portland cement 50kg bag' },
+  { id: 5, name: 'Timber 2x4', price: 25000, description: 'Pine timber plank 2x4 per metre' },
+  { id: 4, name: 'Nails 1kg', price: 12000, description: 'Common wire nails 1kg pack' }
+]
+
+Query F
+SELECT * FROM products ORDER BY price DESC LIMIT 2
+
+Output:
+[
+  {
+    id: 2,
+    name: 'Iron Sheet 3m',
+    description: 'Gauge 30 roofing sheet 3m long',
+    price: 110000
+  },
+  {
+    id: 3,
+    name: 'Paint 5L',
+    description: 'Exterior wall paint white 5L',
+    price: 60000
+  }
+]
+
+Query G
+UPDATE products SET price = 38000 WHERE id = 1
+SELECT * FROM products
+
+Output:
+[
+  { id: 1, name: 'Cement (bag)', description: 'Portland cement 50kg bag', price: 38000 },
+  { id: 2, name: 'Iron Sheet 3m', description: 'Gauge 30 roofing sheet 3m long', price: 110000 },
+  { id: 3, name: 'Paint 5L', description: 'Exterior wall paint white 5L', price: 60000 },
+  { id: 4, name: 'Nails 1kg', description: 'Common wire nails 1kg pack', price: 12000 },
+  { id: 5, name: 'Timber 2x4', description: 'Pine timber plank 2x4 per metre', price: 25000 }
+]

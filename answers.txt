@@ -83,7 +83,7 @@ SELECT * output
 
 
 
-TASK 2 - QUERIES
+TASK 2
 Query A
 SELECT * FROM products
 
@@ -235,3 +235,40 @@ Products + users table data was returned together
 
 Why it worked:
 UNION combines results from two tables, allowing attacker to steal user credentials.
+
+
+
+
+TASK 4
+
+We fixed SQL injection using parameterised queries (? placeholders).
+
+This ensures user input is treated as data, not executable SQL code.
+
+Because of this, attackers cannot change the structure of the SQL query.
+
+TEST OUTPUT:
+Test 1: []
+Test 2: []
+Test 3: undefined
+Test 4: undefined
+
+
+
+TASK 5
+
+We added input validation on top of secure parameterised queries.
+
+Validation ensures that only correct and safe input is processed before it reaches the database.
+
+It blocks empty inputs, invalid characters, spaces in usernames, and short passwords.
+
+TEST OUTPUT:
+Test 1: valid (cement search works)
+Test 2: rejected (empty input)
+Test 3: rejected (<script> blocked)
+Test 4: valid login
+Test 5: rejected (password too short)
+Test 6: rejected (space in username)
+
+

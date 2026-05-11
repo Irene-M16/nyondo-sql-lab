@@ -1,24 +1,35 @@
 const Database = require('better-sqlite3');
 const db = new Database('nyondo_stock.db');
 
-// SAFE SEARCH (no SQL injection)
+// PRODUCT SEARCH (SAFE + VALIDATION
 function searchProductSafe(name) {
-  if (!name || name.length < 2) {
+  if (typeof name !== "string") {
     console.log("Invalid input");
     return [];
   }
 
-  const stmt = db.prepare(
-    "SELECT * FROM products WHERE name LIKE ?"
-  );
+  if (name.length < 2 || /[<>;]/.test(name)) {
+    console.log("Invalid product name");
+    return [];
+  }
 
+  const stmt = db.prepare("SELECT * FROM products WHERE name LIKE ?");
   return stmt.all(`%${name}%`);
 }
 
-// SAFE LOGIN
+
+// LOGIN (SAFE + VALIDATION)
 function loginSafe(username, password) {
-  if (!username || !password) {
+  if (
+    typeof username !== "string" ||
+    typeof password !== "string"
+  ) {
     console.log("Invalid input");
+    return undefined;
+  }
+
+  if (username.includes(" ") || password.length < 6) {
+    console.log("Invalid login input");
     return undefined;
   }
 
@@ -30,8 +41,10 @@ function loginSafe(username, password) {
 }
 
 
-console.log('Test 1:', searchProductSafe("' OR 1=1--"));
-console.log('Test 2:', searchProductSafe("' UNION SELECT id,username,password,role FROM users--"));
-console.log('Test 3:', loginSafe("admin'--", 'anything'));
-console.log('Test 4:', loginSafe("' OR '1'='1", "' OR '1'='1"));
-
+// TEST CASES 
+console.log('Test 1:', searchProductSafe('cement'));
+console.log('Test 2:', searchProductSafe(''));
+console.log('Test 3:', searchProductSafe('<script>'));
+console.log('Test 4:', loginSafe('admin', 'admin123'));
+console.log('Test 5:', loginSafe('admin', 'ab'));
+console.log('Test 6:', loginSafe('ad min', 'pass123'));
